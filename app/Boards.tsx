@@ -1,6 +1,7 @@
 "use client";
 import { Board } from "@/types/board";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useState } from "react";
 import { styled } from "styled-components";
 
@@ -21,6 +22,9 @@ export default function Boards() {
 
     return (
         <section>
+            <Header>
+                <Link href={"/board"}>게시글 추가</Link>
+            </Header>
             <Wrap>
                 {isSuccess && data?.boards.length > 0 ? (
                     data?.boards.map((board) => <div key={board.id}>{board.title}</div>)
@@ -51,4 +55,8 @@ const Wrap = styled.div`
     gap: 1rem;
     margin-bottom: 1rem;
     min-height: 400px;
+`;
+
+const Header = styled.div`
+    text-align: right;
 `;

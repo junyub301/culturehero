@@ -15,6 +15,18 @@ export const GlobalStyle = createGlobalStyle`
     font-size : 16px;
   }
  
+  button {
+    outline: none;
+    border:none;
+    background: unset;
+    cursor: pointer;
+  }
+
+  a{
+    cursor: pointer;
+    text-decoration: none;
+  }
+
   ul, ol {
     list-style: none;
   }

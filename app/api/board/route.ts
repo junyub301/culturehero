@@ -17,8 +17,12 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-    const data = { content: "test1", title: "test 1", userId: "test", password: "test" };
+    const data = await req.json();
+    console.log("🚀 ~ file: route.ts:21 ~ POST ~ data:", data);
     const res = await fetch(`${BASE_URL}/board`, {
+        headers: {
+            "Content-Type": `application/json`,
+        },
         method: "POST",
         body: JSON.stringify(data),
     });
