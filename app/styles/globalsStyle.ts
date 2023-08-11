@@ -1,9 +1,7 @@
 "use client";
 import { createGlobalStyle } from "styled-components";
-import { reset } from "styled-reset";
 
 export const GlobalStyle = createGlobalStyle`
-  ${reset}
 
 * {
     box-sizing: border-box;
@@ -16,7 +14,7 @@ export const GlobalStyle = createGlobalStyle`
     font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI;
     font-size : 16px;
   }
-
+ 
   ul, ol {
     list-style: none;
   }

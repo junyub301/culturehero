@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { GlobalStyle } from "./styles/globalsStyle";
 import Providers from "./provider";
+import StyledComponentsRegistry from "./registry";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,9 +14,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="en">
-            <body className={inter.className}>
-                <GlobalStyle />
-                <Providers>{children}</Providers>
+            <GlobalStyle />
+            <body suppressHydrationWarning={true} className={inter.className}>
+                <Providers>
+                    <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+                </Providers>
             </body>
         </html>
     );

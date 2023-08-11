@@ -1,6 +1,24 @@
 import Image from "next/image";
-import styles from "./page.module.css";
+import { dehydrate } from "@tanstack/react-query";
+import getQueryClient from "@/utils/getQueryClient";
+import Hydrate from "@/utils/hydrate.client";
+import Boards from "./Boards";
 
-export default function Home() {
-    return <main className={styles.main}>main</main>;
+async function getBoards() {
+    const data = await fetch("http://localhost:3000/api/board", { cache: "no-store" });
+    const boards = await data.json();
+    return boards;
+}
+
+export default async function Home() {
+    const queryClient = getQueryClient();
+    await queryClient.prefetchQuery(["hydrate-boards", 1], getBoards);
+    const dehydratedState = dehydrate(queryClient);
+    return (
+        <main>
+            <Hydrate state={dehydratedState}>
+                <Boards />
+            </Hydrate>
+        </main>
+    );
 }
