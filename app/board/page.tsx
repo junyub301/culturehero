@@ -12,7 +12,6 @@ interface CreateData {
 }
 
 const createBoard = async (body: CreateData) => {
-    console.log("🚀 ~ file: page.tsx:15 ~ createBoard ~ body:", body);
     const data = await fetch("http://localhost:3000/api/board", {
         headers: {
             "Content-Type": `application/json`,

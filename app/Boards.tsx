@@ -21,19 +21,23 @@ export default function Boards() {
     });
 
     return (
-        <section>
+        <div>
             <Header>
                 <Link href={"/board"}>게시글 추가</Link>
             </Header>
             <Wrap>
                 {isSuccess && data?.boards.length > 0 ? (
-                    data?.boards.map((board) => <div key={board.id}>{board.title}</div>)
+                    data?.boards.map((board) => (
+                        <Link href={`/board/${board.id}`} key={board.id}>
+                            {board.title}
+                        </Link>
+                    ))
                 ) : (
                     <div>데이터가 없습니다.</div>
                 )}
             </Wrap>
             <button onClick={() => setPage((pre) => pre + 1)}>page up</button>
-        </section>
+        </div>
     );
 }
 

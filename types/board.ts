@@ -3,4 +3,5 @@ export interface Board {
     title: string;
     userId: string;
     createdAt: string;
+    content: string;
 }
