@@ -1,4 +1,7 @@
 "use client";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
+import Textarea from "@/components/Textarea";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -38,14 +41,13 @@ export default function Board() {
         e.preventDefault();
         if (validate()) {
             const data = { userId, password, content, title } as CreateData;
-            console.log("🚀 ~ file: page.tsx:41 ~ onSubmit ~ data:", data);
             mutate(data);
         }
     };
 
     const validate = () => {
         if (userId === "" || password === "" || title === "" || content === "") {
-            console.log("없어요");
+            alert("값을 입력하세요.");
             return false;
         }
         return true;
@@ -55,43 +57,31 @@ export default function Board() {
         <div>
             <Form onSubmit={onSubmit}>
                 <div className="user__info">
-                    <div>
-                        <div>id</div>
-                        <div>
-                            <input
-                                type="text"
-                                onChange={(e) => setUserId(e.currentTarget.value)}
-                                value={userId}
-                            />
-                        </div>
-                    </div>
-                    <div>
-                        <div>password: </div>
-                        <div>
-                            <input
-                                type="password"
-                                onChange={(e) => setPassword(e.currentTarget.value)}
-                                value={password}
-                            />
-                        </div>
-                        <div></div>
-                    </div>
+                    <Input
+                        label="Id*"
+                        onChange={(e) => setUserId(e.currentTarget.value)}
+                        value={userId}
+                    />
+                    <Input
+                        label="Password*"
+                        type="password"
+                        onChange={(e) => setPassword(e.currentTarget.value)}
+                        value={password}
+                    />
                 </div>
                 <div>
-                    <div>title</div>
-                    <div>
-                        <input
-                            type="text"
-                            onChange={(e) => setTitle(e.currentTarget.value)}
-                            value={title}
-                        />
-                    </div>
+                    <Input
+                        label="Title*"
+                        onChange={(e) => setTitle(e.currentTarget.value)}
+                        value={title}
+                    />
                 </div>
-                게시글:
-                <textarea onChange={(e) => setContent(e.currentTarget.value)} value={content} />
-                <button className="addBtn" type="submit">
-                    추가
-                </button>
+                <Textarea
+                    label="Content*"
+                    onChange={(e) => setContent(e.currentTarget.value)}
+                    value={content}
+                />
+                <Button type="submit">추가</Button>
             </Form>
         </div>
     );
@@ -99,20 +89,11 @@ export default function Board() {
 
 const Form = styled.form`
     display: flex;
+    padding: 1rem;
     flex-direction: column;
     gap: 1rem;
-    .user__info {
+    > .user__info {
         display: flex;
         gap: 1rem;
-        > div {
-            display: flex;
-            gap: 1rem;
-        }
-    }
-
-    .addBtn {
-        padding: 1rem;
-        border: 1px solid blue;
-        background-color: skyblue;
     }
 `;

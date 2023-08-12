@@ -1,7 +1,12 @@
 "use client";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
+import Textarea from "@/components/Textarea";
 import { Board } from "@/types/board";
+import { dateFormat } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { styled } from "styled-components";
 
 interface UpdateProps {
     board: Board;
@@ -34,23 +39,41 @@ export default function Update({ board, setIsUpdate }: UpdateProps) {
         mutate({ id: board.id, body: { ...board, title, content } });
     };
     return (
-        <form onSubmit={onSubmit}>
-            <div>
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.currentTarget.value)}
-                />
+        <Wrap onSubmit={onSubmit}>
+            <div className="update__title">
+                <Input value={title} onChange={(e) => setTitle(e.currentTarget.value)} />
             </div>
             <div>
-                <div>{board.userId}</div>
-                <div>{board.createdAt}</div>
+                <span className="user__id">{board.userId}</span> •{" "}
+                {dateFormat(board.updatedAt || board.createdAt)}
             </div>
-            <div>
-                <textarea value={content} onChange={(e) => setContent(e.currentTarget.value)} />
+            <div className="board__content">
+                <Textarea value={content} onChange={(e) => setContent(e.currentTarget.value)} />
             </div>
-            <button onClick={() => setIsUpdate(false)}>취소</button>
-            <button type="submit">수정</button>
-        </form>
+            <div className="update__footer">
+                <Button onClick={() => setIsUpdate(false)}>취소</Button>
+                <Button type="submit">수정</Button>
+            </div>
+        </Wrap>
     );
 }
+
+const Wrap = styled.form`
+    padding: 1rem 10rem;
+    .update__title {
+        margin: 1rem 0;
+    }
+    .user__id {
+        font-weight: 600;
+    }
+    .modify__btn {
+        text-align: right;
+    }
+    .board__content {
+        margin: 2rem 0px;
+    }
+    .update__footer {
+        display: flex;
+        gap: 2px;
+    }
+`;

@@ -14,7 +14,7 @@ export const GlobalStyle = createGlobalStyle`
     font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI;
     font-size : 16px;
   }
- 
+  
   button {
     outline: none;
     border:none;

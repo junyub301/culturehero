@@ -2,6 +2,7 @@
 import { Board } from "@/types/board";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { styled } from "styled-components";
 
@@ -13,6 +14,7 @@ async function getBoards(page: number) {
 
 export default function Boards() {
     const [page, setPage] = useState<number>(1);
+    const router = useRouter();
 
     const { data, isSuccess } = useQuery<{ boards: Board[] }, Error>({
         queryKey: ["hydrate-boards", page],
@@ -28,9 +30,17 @@ export default function Boards() {
             <Wrap>
                 {isSuccess && data?.boards.length > 0 ? (
                     data?.boards.map((board) => (
-                        <Link href={`/board/${board.id}`} key={board.id}>
-                            {board.title}
-                        </Link>
+                        <Board key={board.id} onClick={() => router.push(`/board/${board.id}`)}>
+                            <div className="board__wrap">
+                                <div className="board__info">
+                                    <h3>{board.title}</h3>
+                                    <div className="board__content">{board.content}</div>
+                                </div>
+                                <div className="board__userId">
+                                    by <span>{board.userId}</span>
+                                </div>
+                            </div>
+                        </Board>
                     ))
                 ) : (
                     <div>데이터가 없습니다.</div>
@@ -42,25 +52,50 @@ export default function Boards() {
 }
 
 const Wrap = styled.div`
-    /* --space-y: 0;
-    --tw-divide-opacity: 1;
-    --tw-divide-y-reverse: 0;
-    > :not([hidden]) ~ :not([hidden]) {
-        margin-top: calc(0.75rem * calc(1 - var(--space-y)));
-        margin-bottom: calc(0.75rem * var(--space-y));
-        border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
-        border-bottom-width: calc(1px * var(--tw-divide-y-reverse));
-        border-color: black;
-        border-style: solid;
-    }
-    border: 1px solid black; */
     display: flex;
+    padding: 1rem;
     flex-direction: column;
-    gap: 1rem;
     margin-bottom: 1rem;
-    min-height: 400px;
+    flex-wrap: wrap;
+    background-color: #dfdfdf;
+    @media screen and (min-width: 600px) {
+        flex-direction: row;
+    }
+`;
+
+const Board = styled.article`
+    flex-shrink: 1;
+    cursor: pointer;
+    z-index: 1;
+    flex-basis: 100%;
+    padding: 0.5rem;
+    @media screen and (min-width: 600px) {
+        flex-basis: 33%;
+        .board__wrap {
+            height: 15rem;
+        }
+    }
+    .board__wrap {
+        border-radius: 10px;
+        background-color: white;
+    }
+    .board__info {
+        padding: 1rem;
+        border-bottom: 1px solid gray;
+        height: 80%;
+    }
+    .board__userId {
+        padding: 0.5rem 0.5rem 0.5rem 1rem;
+
+        width: 100%;
+        font-size: 13px;
+        > span {
+            font-weight: 600;
+        }
+    }
 `;
 
 const Header = styled.div`
+    padding-right: 1rem;
     text-align: right;
 `;
