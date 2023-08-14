@@ -12,7 +12,7 @@ async function getBoards() {
 
 export default async function Home() {
     const queryClient = getQueryClient();
-    await queryClient.prefetchQuery(["hydrate-boards", 1], getBoards);
+    await queryClient.prefetchInfiniteQuery(["hydrate-boards"], getBoards);
     const dehydratedState = dehydrate(queryClient);
     return (
         <main>

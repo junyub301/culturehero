@@ -18,7 +18,6 @@ export default function Detail({
     setIsUpdate,
 }: DetailProps) {
     const router = useRouter();
-    const [commentValue, setCommentValue] = useState<string>("");
     const { mutate } = useMutation(
         async (id: string) => {
             await fetch(`http://localhost:3000/api/board/${id}`, { method: "DELETE" });
@@ -29,6 +28,13 @@ export default function Detail({
             },
         }
     );
+
+    const onUpdate = async () => {
+        await fetch(`http://localhost:3000/api/board/${id}/check`, {
+            method: "POST",
+            body: JSON.stringify({ password: "test12" }),
+        });
+    };
 
     return (
         <Wrap>
@@ -41,7 +47,7 @@ export default function Detail({
                     {dateFormat(updatedAt || createdAt)}
                 </div>
                 <div className="modify__btn">
-                    <button onClick={() => setIsUpdate(true)}>수정</button>
+                    <button onClick={onUpdate}>수정</button>
                     <button onClick={() => mutate(id)}>삭제</button>
                 </div>
             </div>
@@ -54,7 +60,7 @@ export default function Detail({
 const Wrap = styled.section`
     padding: 1rem;
     @media screen and (min-width: 600px) {
-        padding: 1rem 10rem;
+        padding: 1rem 5rem;
     }
     .user__id {
         font-weight: 600;

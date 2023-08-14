@@ -20,6 +20,8 @@ const Wrap = styled.div`
 `;
 const CustomTextarea = styled.textarea`
     margin-top: 0.5em;
+    font-size: 1rem;
+    padding: 1rem;
     width: 100%;
     min-height: 5rem;
     border-radius: 5px;

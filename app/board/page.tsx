@@ -81,7 +81,10 @@ export default function Board() {
                     onChange={(e) => setContent(e.currentTarget.value)}
                     value={content}
                 />
-                <Button type="submit">추가</Button>
+                <div className="create__footer">
+                    <Button onClick={() => router.push("/")}>취소</Button>
+                    <Button type="submit">추가</Button>
+                </div>
             </Form>
         </div>
     );
@@ -95,5 +98,10 @@ const Form = styled.form`
     > .user__info {
         display: flex;
         gap: 1rem;
+    }
+
+    .create__footer {
+        display: flex;
+        gap: 5px;
     }
 `;

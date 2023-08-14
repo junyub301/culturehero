@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 const BASE_URL = "https://64d5df4f613ee4426d97b2e2.mockapi.io/api/v1/";
 
 export async function GET(_: Request, { params: { id } }: { params: { id: string } }) {
-    console.log("🚀 ~ file: route.ts:7 ~ GET ~ id:", id);
     try {
         const res = await fetch(`${BASE_URL}/board/${id}/comment`);
         const comment = (await res.json()) as Board;
@@ -17,7 +16,6 @@ export async function GET(_: Request, { params: { id } }: { params: { id: string
 
 export async function POST(req: Request, { params: { id } }: { params: { id: string } }) {
     const data = await req.json();
-    console.log("🚀 ~ file: route.ts:20 ~ POST ~ data:", data);
     const res = await fetch(`${BASE_URL}/board/${id}/comment`, {
         headers: {
             "Content-Type": `application/json`,

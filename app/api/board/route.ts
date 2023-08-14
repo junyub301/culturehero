@@ -7,7 +7,9 @@ export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const page = searchParams.get("page") || 1;
-        const res = await fetch(`${BASE_URL}/board?completed=false&page=${page}&limit=15`);
+        const res = await fetch(
+            `${BASE_URL}/board?completed=false&page=${page}&limit=15&sortby=createdAt&order=desc`
+        );
         const boards = (await res.json()) as Board[];
 
         return NextResponse.json({ boards });
@@ -17,15 +19,19 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-    const data = await req.json();
-    const res = await fetch(`${BASE_URL}/board`, {
-        headers: {
-            "Content-Type": `application/json`,
-        },
-        method: "POST",
-        body: JSON.stringify({ ...data, createdAt: new Date(), updatedAt: null }),
-    });
+    try {
+        const data = await req.json();
+        const res = await fetch(`${BASE_URL}/board`, {
+            headers: {
+                "Content-Type": `application/json`,
+            },
+            method: "POST",
+            body: JSON.stringify({ ...data, createdAt: new Date(), updatedAt: null }),
+        });
 
-    const resData = await res.json();
-    return NextResponse.json({ resData });
+        const resData = await res.json();
+        return NextResponse.json({ resData });
+    } catch (error) {
+        console.log(error);
+    }
 }

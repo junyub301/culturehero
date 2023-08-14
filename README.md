@@ -6,6 +6,6 @@
 -   [x] DELETE board
 -   [x] GET comment
 -   [x] POST comment
--   [ ] PUT comment
--   [ ] DELETE comment
+-   [x] PUT comment
+-   [x] DELETE comment
 -   [ ] style

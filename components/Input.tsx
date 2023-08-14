@@ -20,6 +20,7 @@ const Wrap = styled.div`
 `;
 const CustomInput = styled.input`
     width: 100%;
+    font-size: 1rem;
     padding: 1rem;
     border-radius: 5px;
     border: 1px solid gray;

@@ -1,9 +1,11 @@
 "use client";
+import useIntersection from "@/lib/useIntersection";
 import { Board } from "@/types/board";
-import { useQuery } from "@tanstack/react-query";
+import { ellipsisStr } from "@/utils";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { styled } from "styled-components";
 
 async function getBoards(page: number) {
@@ -13,40 +15,62 @@ async function getBoards(page: number) {
 }
 
 export default function Boards() {
-    const [page, setPage] = useState<number>(1);
     const router = useRouter();
 
-    const { data, isSuccess } = useQuery<{ boards: Board[] }, Error>({
-        queryKey: ["hydrate-boards", page],
-        queryFn: () => getBoards(page),
+    const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<{ boards: Board[] }, Error>({
+        queryKey: ["hydrate-boards"],
+        queryFn: ({ pageParam = 1 }) => getBoards(pageParam),
         keepPreviousData: true,
+        getNextPageParam: (lastPage, allPages) => {
+            const curPage = allPages.length;
+            return lastPage.boards.length >= 15 ? curPage + 1 : undefined;
+        },
     });
+    const intersectionRef = useRef(null);
+    const intersection = useIntersection(intersectionRef, { threshold: 1 });
+
+    useEffect(() => {
+        if (!intersection) return;
+
+        if (hasNextPage) {
+            if (intersection.isIntersecting) {
+                fetchNextPage();
+            }
+        }
+    }, [intersection, hasNextPage]);
 
     return (
         <div>
-            <Header>
-                <Link href={"/board"}>게시글 추가</Link>
-            </Header>
+            <Plus href={"/board"}> +</Plus>
             <Wrap>
-                {isSuccess && data?.boards.length > 0 ? (
-                    data?.boards.map((board) => (
-                        <Board key={board.id} onClick={() => router.push(`/board/${board.id}`)}>
-                            <div className="board__wrap">
-                                <div className="board__info">
-                                    <h3>{board.title}</h3>
-                                    <div className="board__content">{board.content}</div>
-                                </div>
-                                <div className="board__userId">
-                                    by <span>{board.userId}</span>
-                                </div>
-                            </div>
-                        </Board>
-                    ))
+                {data && data?.pages.length > 0 ? (
+                    <>
+                        {data?.pages?.map((page) =>
+                            page?.boards.map((board) => (
+                                <Board key={board.id}>
+                                    <div className="board__wrap">
+                                        <div
+                                            className="board__info"
+                                            onClick={() => router.push(`/board/${board.id}`)}
+                                        >
+                                            <h3>{ellipsisStr(board.title, 20)}</h3>
+                                            <div className="board__content">
+                                                {ellipsisStr(board.content, 50)}
+                                            </div>
+                                        </div>
+                                        <div className="board__userId">
+                                            by <span>{board.userId}</span>
+                                        </div>
+                                    </div>
+                                </Board>
+                            ))
+                        )}
+                        <div className="intersection" ref={intersectionRef}></div>
+                    </>
                 ) : (
                     <div>데이터가 없습니다.</div>
                 )}
             </Wrap>
-            <button onClick={() => setPage((pre) => pre + 1)}>page up</button>
         </div>
     );
 }
@@ -61,25 +85,44 @@ const Wrap = styled.div`
     @media screen and (min-width: 600px) {
         flex-direction: row;
     }
+    .intersection {
+        height: 100px;
+    }
+`;
+
+const Plus = styled(Link)`
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    align-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.5rem;
+    position: fixed;
+    z-index: 3;
+    bottom: 10%;
+    right: 5%;
+    color: white;
+    background-color: #f7b63b;
+    &:hover {
+        transform: scale(1.15);
+        transition: transform 0.5s;
+    }
 `;
 
 const Board = styled.article`
-    flex-shrink: 1;
-    cursor: pointer;
+    width: 100%;
     z-index: 1;
-    flex-basis: 100%;
     padding: 0.5rem;
-    @media screen and (min-width: 600px) {
-        flex-basis: 33%;
-        .board__wrap {
-            height: 15rem;
-        }
-    }
+    word-wrap: break-word;
+
     .board__wrap {
         border-radius: 10px;
         background-color: white;
     }
     .board__info {
+        cursor: pointer;
         padding: 1rem;
         border-bottom: 1px solid gray;
         height: 80%;
@@ -93,9 +136,4 @@ const Board = styled.article`
             font-weight: 600;
         }
     }
-`;
-
-const Header = styled.div`
-    padding-right: 1rem;
-    text-align: right;
 `;
