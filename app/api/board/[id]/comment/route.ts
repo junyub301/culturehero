@@ -7,9 +7,9 @@ export async function GET(_: Request, { params: { id } }: { params: { id: string
     console.log("🚀 ~ file: route.ts:7 ~ GET ~ id:", id);
     try {
         const res = await fetch(`${BASE_URL}/board/${id}/comment`);
-        const board = (await res.json()) as Board;
+        const comment = (await res.json()) as Board;
 
-        return NextResponse.json({ board });
+        return NextResponse.json({ comment });
     } catch (error) {
         console.log(error);
     }
@@ -17,12 +17,13 @@ export async function GET(_: Request, { params: { id } }: { params: { id: string
 
 export async function POST(req: Request, { params: { id } }: { params: { id: string } }) {
     const data = await req.json();
+    console.log("🚀 ~ file: route.ts:20 ~ POST ~ data:", data);
     const res = await fetch(`${BASE_URL}/board/${id}/comment`, {
         headers: {
             "Content-Type": `application/json`,
         },
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, createdAt: new Date(), updatedAt: null }),
     });
 
     const resData = await res.json();

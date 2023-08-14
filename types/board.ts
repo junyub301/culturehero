@@ -6,3 +6,11 @@ export interface Board {
     content: string;
     updatedAt?: string;
 }
+
+export interface Comment {
+    id: string;
+    userId: string;
+    createdAt: string;
+    updatedAt?: string;
+    comment: string;
+}

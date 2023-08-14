@@ -2,10 +2,10 @@
 
 -   [x] GET board
 -   [x] POST board
--   [ ] PUT board
--   [ ] DELETE board
--   [ ] GET comment
--   [ ] POST comment
+-   [x] PUT board
+-   [x] DELETE board
+-   [x] GET comment
+-   [x] POST comment
 -   [ ] PUT comment
 -   [ ] DELETE comment
 -   [ ] style

@@ -22,7 +22,7 @@ export async function PUT(req: Request, { params: { id } }: { params: { id: stri
                 "Content-Type": `application/json`,
             },
             method: "PUT",
-            body: JSON.stringify(data),
+            body: JSON.stringify({ ...data, updatedAt: new Date() }),
         });
         const board = (await res.json()) as Board;
 

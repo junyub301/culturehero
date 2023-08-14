@@ -23,7 +23,7 @@ export async function POST(req: Request) {
             "Content-Type": `application/json`,
         },
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, createdAt: new Date(), updatedAt: null }),
     });
 
     const resData = await res.json();

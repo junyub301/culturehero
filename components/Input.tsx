@@ -7,7 +7,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export default function Input({ label, type, ...props }: InputProps) {
     return (
         <Wrap>
-            <label>{label}</label>
+            <label className="input__label">{label}</label>
             <div>
                 <CustomInput type={type || "text"} {...props} />
             </div>
@@ -19,11 +19,8 @@ const Wrap = styled.div`
     width: 100%;
 `;
 const CustomInput = styled.input`
-    margin-top: 0.5em;
     width: 100%;
-    min-height: 2.5rem;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    padding: 1rem;
     border-radius: 5px;
     border: 1px solid gray;
 `;
