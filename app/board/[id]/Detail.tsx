@@ -4,9 +4,11 @@ import { Board } from "@/types/board";
 import { dateFormat } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import Comment from "./Comment";
+import useModal from "@/lib/useModal";
+import Prompt from "@/components/Prompt";
 
 interface DetailProps {
     board: Board;
@@ -28,12 +30,33 @@ export default function Detail({
             },
         }
     );
+    const { openModal } = useModal();
 
-    const onUpdate = async () => {
-        await fetch(`http://localhost:3000/api/board/${id}/check`, {
-            method: "POST",
-            body: JSON.stringify({ password: "test12" }),
+    const onCheck = (kind = "update" || "delete") => {
+        openModal({
+            Component: Prompt,
+            props: {
+                text: "비밀번호를 입력하세요.",
+                onSuccess: (password: string) => checkPassword(password, kind),
+            },
         });
+    };
+
+    const checkPassword = async (password: string, kind = "update" || "delete") => {
+        const res = await fetch(`http://localhost:3000/api/board/${id}/check`, {
+            method: "POST",
+            body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+            if (kind === "update") {
+                setIsUpdate(true);
+            } else {
+                mutate(id);
+            }
+        } else {
+            alert("비밀번호가 틀렸습니다.");
+        }
     };
 
     return (
@@ -44,14 +67,14 @@ export default function Detail({
             <div>
                 <div>
                     <span className="user__id">{userId}</span> •{" "}
-                    {dateFormat(updatedAt || createdAt)}
+                    <span className="board__createAt">{dateFormat(updatedAt || createdAt)}</span>
                 </div>
                 <div className="modify__btn">
-                    <button onClick={onUpdate}>수정</button>
-                    <button onClick={() => mutate(id)}>삭제</button>
+                    <button onClick={() => onCheck("update")}>수정</button>
+                    <button onClick={() => onCheck("delete")}>삭제</button>
                 </div>
             </div>
-            <div className="board__content">{content}</div>
+            <pre className="board__content">{content}</pre>
             <Comment id={id} />
         </Wrap>
     );
@@ -63,12 +86,16 @@ const Wrap = styled.section`
         padding: 1rem 5rem;
     }
     .user__id {
-        font-weight: 600;
+        font-weight: 500;
+    }
+    .board__createAt {
+        font-size: 14px;
     }
     .modify__btn {
         text-align: right;
     }
     .board__content {
+        white-space: pre-wrap;
         margin: 2rem 0px;
     }
 `;

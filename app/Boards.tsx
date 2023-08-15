@@ -2,10 +2,10 @@
 import useIntersection from "@/lib/useIntersection";
 import { Board } from "@/types/board";
 import { ellipsisStr } from "@/utils";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { styled } from "styled-components";
 
 async function getBoards(page: number) {
@@ -80,11 +80,7 @@ const Wrap = styled.div`
     padding: 1rem;
     flex-direction: column;
     margin-bottom: 1rem;
-    flex-wrap: wrap;
     background-color: #dfdfdf;
-    @media screen and (min-width: 600px) {
-        flex-direction: row;
-    }
     .intersection {
         height: 100px;
     }
@@ -115,7 +111,6 @@ const Board = styled.article`
     width: 100%;
     z-index: 1;
     padding: 0.5rem;
-    word-wrap: break-word;
 
     .board__wrap {
         border-radius: 10px;

@@ -5,6 +5,8 @@ export const GlobalStyle = createGlobalStyle`
 
 * {
     box-sizing: border-box;
+    word-break: break-all;
+
   }
 
   html, body { 

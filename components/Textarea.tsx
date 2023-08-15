@@ -15,15 +15,15 @@ export default function Textarea({ label, ...props }: TextareaProps) {
     );
 }
 
-const Wrap = styled.div`
+export const Wrap = styled.div`
     width: 100%;
 `;
 const CustomTextarea = styled.textarea`
     margin-top: 0.5em;
+    min-height: 5rem;
+    width: 100%;
     font-size: 1rem;
     padding: 1rem;
-    width: 100%;
-    min-height: 5rem;
     border-radius: 5px;
     border: 1px solid gray;
 `;

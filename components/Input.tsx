@@ -15,10 +15,11 @@ export default function Input({ label, type, ...props }: InputProps) {
     );
 }
 
-const Wrap = styled.div`
+export const Wrap = styled.div`
     width: 100%;
 `;
-const CustomInput = styled.input`
+
+export const CustomInput = styled.input`
     width: 100%;
     font-size: 1rem;
     padding: 1rem;

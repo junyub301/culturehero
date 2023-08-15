@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { GlobalStyle } from "./styles/globalsStyle";
 import Providers from "./provider";
 import StyledComponentsRegistry from "./registry";
+import ModalsProvider from "@/lib/context/modalProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <GlobalStyle />
             <body suppressHydrationWarning={true} className={inter.className}>
                 <Providers>
-                    <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+                    <ModalsProvider>
+                        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+                    </ModalsProvider>
                 </Providers>
             </body>
         </html>

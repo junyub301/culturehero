@@ -6,6 +6,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Comment, Comment as CommentType } from "@/types/board";
 import { styled } from "styled-components";
+import useModal from "@/lib/useModal";
+import Prompt from "@/components/Prompt";
 
 interface CreateComment {
     comment: string;
@@ -55,6 +57,7 @@ const Comments = ({ id }: { id: string }) => {
         setUserId("");
         setPassword("");
     };
+
     return (
         <Wrap className="board__comment">
             <div className="comment__input__user">
@@ -140,6 +143,38 @@ const Comment = ({
         updateComment({ id, commentId: comment.id, body });
     };
 
+    const { openModal } = useModal();
+
+    const onCheck = (kind = "update" || "delete") => {
+        openModal({
+            Component: Prompt,
+            props: {
+                text: "비밀번호를 입력하세요.",
+                onSuccess: (password: string) => checkPassword(password, kind),
+            },
+        });
+    };
+
+    const checkPassword = async (password: string, kind = "update" || "delete") => {
+        const res = await fetch(
+            `http://localhost:3000/api/board/${id}/comment/${comment.id}/check`,
+            {
+                method: "POST",
+                body: JSON.stringify({ password }),
+            }
+        );
+        const data = await res.json();
+        if (data.ok) {
+            if (kind === "update") {
+                setIsUpdate(true);
+            } else {
+                removeComment({ id, commentId: comment.id });
+            }
+        } else {
+            alert("비밀번호가 틀렸습니다.");
+        }
+    };
+
     return (
         <div>
             <div className="comment__user__info">
@@ -150,10 +185,21 @@ const Comment = ({
                     </span>
                 </div>
                 <div>
-                    <button onClick={() => setIsUpdate(true)}>수정</button>
-                    <button onClick={() => removeComment({ id, commentId: comment.id })}>
-                        삭제
-                    </button>
+                    {isUpdate ? (
+                        <button onClick={() => setIsUpdate(false)}>취소</button>
+                    ) : (
+                        <>
+                            <button
+                                onClick={() => {
+                                    onCheck("update");
+                                    setInputValue(comment.comment);
+                                }}
+                            >
+                                수정
+                            </button>
+                            <button onClick={() => onCheck("delete")}>삭제</button>
+                        </>
+                    )}
                 </div>
             </div>
             <div className="comment_content">
@@ -217,7 +263,7 @@ const Wrap = styled.article`
                 display: flex;
                 gap: 2px;
                 > button {
-                    width: 40%;
+                    width: 25%;
                 }
             }
         }
