@@ -2,6 +2,7 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
+import useMutations from "@/lib/useMutations";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -14,29 +15,19 @@ interface CreateData {
     content: string;
 }
 
-const createBoard = async (body: CreateData) => {
-    const data = await fetch("http://localhost:3000/api/board", {
-        headers: {
-            "Content-Type": `application/json`,
-        },
-        method: "POST",
-        body: JSON.stringify(body),
-    });
-    const res = await data.json();
-    return res;
-};
-
 export default function Board() {
     const router = useRouter();
-    const { mutate } = useMutation(createBoard, {
-        onSuccess: () => {
-            router.push("/");
-        },
+    const { mutate } = useMutations({
+        url: `board`,
+        method: "POST",
+        onSuccessFn: () => router.push("/"),
     });
+
     const [userId, setUserId] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [title, setTitle] = useState<string>("");
     const [content, setContent] = useState<string>("");
+
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (validate()) {

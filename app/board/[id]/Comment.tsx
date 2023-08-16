@@ -1,44 +1,28 @@
 "use client";
 import Button from "@/components/Button";
 import Input from "@/components/Input";
-import { dateFormat } from "@/utils";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { Comment, Comment as CommentType } from "@/types/board";
-import { styled } from "styled-components";
-import useModal from "@/lib/useModal";
 import Prompt from "@/components/Prompt";
-
-interface CreateComment {
-    comment: string;
-    userId: string;
-    password: string;
-}
-
-const addComment = async ({ id, body }: { id: string; body: CreateComment }) => {
-    await fetch(`http://localhost:3000/api/board/${id}/comment`, {
-        method: "POST",
-        body: JSON.stringify(body),
-    });
-};
-
-const getComments = async (id: string) => {
-    const res = await fetch(`http://localhost:3000/api/board/${id}/comment`);
-    const data = await res.json();
-    return data;
-};
+import useFetch from "@/lib/useFetch";
+import useModal from "@/lib/useModal";
+import useMutations from "@/lib/useMutations";
+import { Comment, Comment as CommentType } from "@/types/board";
+import { dateFormat } from "@/utils";
+import { useCallback, useState } from "react";
+import { styled } from "styled-components";
 
 const Comments = ({ id }: { id: string }) => {
+    const INVALIDATE_QUERY_KDY = ["board-comment", id];
     const [commentValue, setCommentValue] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const { data, refetch } = useQuery<{ comment: CommentType[] }, Error>({
-        queryKey: ["board-comment", id],
-        queryFn: () => getComments(id),
-    });
-    const { mutate: createComment } = useMutation(addComment, {
-        onSuccess: () => {
-            refetch();
+    const { data } = useFetch<CommentType[]>(`board/${id}/comment`, INVALIDATE_QUERY_KDY);
+    const { mutate: createComment } = useMutations({
+        url: `board/${id}/comment`,
+        method: "POST",
+        invalidateQueryKey: INVALIDATE_QUERY_KDY,
+        onSuccessFn: () => {
+            setUserId("");
+            setPassword("");
             setCommentValue("");
         },
     });
@@ -48,14 +32,11 @@ const Comments = ({ id }: { id: string }) => {
             alert("아이디/패스워드 및 내용을 입력하세요.");
             return;
         }
-        const body = {
+        createComment({
             comment: commentValue,
             userId,
             password,
-        };
-        createComment({ id, body });
-        setUserId("");
-        setPassword("");
+        });
     };
 
     return (
@@ -80,6 +61,11 @@ const Comments = ({ id }: { id: string }) => {
                 <Input
                     value={commentValue}
                     onChange={(e) => setCommentValue(e.currentTarget.value)}
+                    onKeyUp={(e) => {
+                        if (e.key === "Enter") {
+                            onClick();
+                        }
+                    }}
                     placeholder="댓글을 작성하세요."
                 />
                 <Button onClick={onClick} className="comment__add__btn">
@@ -87,60 +73,32 @@ const Comments = ({ id }: { id: string }) => {
                 </Button>
             </div>
             <div className="comments">
-                {data?.comment.map((comment) => {
-                    return <Comment key={comment.id} id={id} comment={comment} refetch={refetch} />;
+                {data?.map((comment) => {
+                    return <Comment key={comment.id} id={id} comment={comment} />;
                 })}
             </div>
         </Wrap>
     );
 };
 
-const deleteComment = async ({ id, commentId }: { id: string; commentId: string }) => {
-    await fetch(`http://localhost:3000/api/board/${id}/comment/${commentId}`, { method: "DELETE" });
-};
-
-const putComment = async ({
-    id,
-    commentId,
-    body,
-}: {
-    id: string;
-    commentId: string;
-    body: any;
-}) => {
-    await fetch(`http://localhost:3000/api/board/${id}/comment/${commentId}`, {
-        method: "PUT",
-        body: JSON.stringify({ ...body, updatedAt: new Date() }),
-    });
-};
-
-const Comment = ({
-    id,
-    comment,
-    refetch,
-}: {
-    id: string;
-    comment: Comment;
-    refetch: () => void;
-}) => {
+const Comment = ({ id, comment }: { id: string; comment: Comment }) => {
+    const INVALIDATE_QUERY_KDY = ["board-comment", id];
     const [isUpdate, setIsUpdate] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<string>(comment.comment);
-    const { mutate: removeComment } = useMutation(deleteComment, {
-        onSuccess: () => {
-            refetch();
-        },
+    const { mutate: removeComment } = useMutations({
+        url: `board/${id}/comment/${comment.id}`,
+        method: "DELETE",
+        invalidateQueryKey: INVALIDATE_QUERY_KDY,
     });
-
-    const { mutate: updateComment } = useMutation(putComment, {
-        onSuccess: () => {
-            refetch();
-            setIsUpdate(false);
-        },
+    const { mutate: updateComment } = useMutations({
+        url: `board/${id}/comment/${comment.id}`,
+        method: "PUT",
+        invalidateQueryKey: INVALIDATE_QUERY_KDY,
+        onSuccessFn: () => setIsUpdate(false),
     });
 
     const onUpdate = () => {
-        const body = { comment: inputValue };
-        updateComment({ id, commentId: comment.id, body });
+        updateComment({ comment: inputValue });
     };
 
     const { openModal } = useModal();
@@ -155,7 +113,7 @@ const Comment = ({
         });
     };
 
-    const checkPassword = async (password: string, kind = "update" || "delete") => {
+    const checkPassword = useCallback(async (password: string, kind = "update" || "delete") => {
         const res = await fetch(
             `http://localhost:3000/api/board/${id}/comment/${comment.id}/check`,
             {
@@ -168,12 +126,12 @@ const Comment = ({
             if (kind === "update") {
                 setIsUpdate(true);
             } else {
-                removeComment({ id, commentId: comment.id });
+                removeComment({});
             }
         } else {
             alert("비밀번호가 틀렸습니다.");
         }
-    };
+    }, []);
 
     return (
         <div>

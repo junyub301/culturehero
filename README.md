@@ -9,3 +9,6 @@
 -   [x] PUT comment
 -   [x] DELETE comment
 -   [ ] style
+-   [ ] password JWT
+-   [ ] TEST
+-   [ ] Refactor

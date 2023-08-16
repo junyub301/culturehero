@@ -9,21 +9,25 @@ import { useEffect, useRef } from "react";
 import { styled } from "styled-components";
 
 async function getBoards(page: number) {
-    const data = await fetch(`http://localhost:3000/api/board?page=${page}`);
-    const boards = await data.json();
-    return boards;
+    try {
+        const data = await fetch(
+            `https://64d5df4f613ee4426d97b2e2.mockapi.io/api/v1//board?page=${page}&limit=15&sortby=createdAt&order=desc`
+        );
+        const boards = await data.json();
+        return boards;
+    } catch (error) {}
 }
 
 export default function Boards() {
     const router = useRouter();
 
-    const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<{ boards: Board[] }, Error>({
+    const { data, fetchNextPage, hasNextPage } = useInfiniteQuery<Board[], Error>({
         queryKey: ["hydrate-boards"],
         queryFn: ({ pageParam = 1 }) => getBoards(pageParam),
         keepPreviousData: true,
         getNextPageParam: (lastPage, allPages) => {
             const curPage = allPages.length;
-            return lastPage.boards.length >= 15 ? curPage + 1 : undefined;
+            return lastPage.length >= 15 ? curPage + 1 : undefined;
         },
     });
     const intersectionRef = useRef(null);
@@ -31,7 +35,6 @@ export default function Boards() {
 
     useEffect(() => {
         if (!intersection) return;
-
         if (hasNextPage) {
             if (intersection.isIntersecting) {
                 fetchNextPage();
@@ -43,10 +46,10 @@ export default function Boards() {
         <div>
             <Plus href={"/board"}> +</Plus>
             <Wrap>
-                {data && data?.pages.length > 0 ? (
+                {data && data?.pages[0].length > 0 ? (
                     <>
                         {data?.pages?.map((page) =>
-                            page?.boards.map((board) => (
+                            page?.map((board) => (
                                 <Board key={board.id}>
                                     <div className="board__wrap">
                                         <div

@@ -30,6 +30,11 @@ export default function Prompt({ onClose, onSuccess, text, defaultValue }: Promp
                         label={text}
                         type="password"
                         onChange={(e) => setValue(e.currentTarget.value)}
+                        onKeyUp={(e) => {
+                            if (e.key === "Enter") {
+                                onClick();
+                            }
+                        }}
                     />
                 </div>
                 <div>

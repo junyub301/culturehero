@@ -1,14 +1,14 @@
 "use client";
 
+import Prompt from "@/components/Prompt";
+import useModal from "@/lib/useModal";
+import useMutations from "@/lib/useMutations";
 import { Board } from "@/types/board";
 import { dateFormat } from "@/utils";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { styled } from "styled-components";
 import Comment from "./Comment";
-import useModal from "@/lib/useModal";
-import Prompt from "@/components/Prompt";
 
 interface DetailProps {
     board: Board;
@@ -20,16 +20,12 @@ export default function Detail({
     setIsUpdate,
 }: DetailProps) {
     const router = useRouter();
-    const { mutate } = useMutation(
-        async (id: string) => {
-            await fetch(`http://localhost:3000/api/board/${id}`, { method: "DELETE" });
-        },
-        {
-            onSuccess: () => {
-                router.push("/");
-            },
-        }
-    );
+    const { mutate } = useMutations({
+        url: `board/${id}`,
+        method: "DELETE",
+        onSuccessFn: () => router.push("/"),
+    });
+
     const { openModal } = useModal();
 
     const onCheck = (kind = "update" || "delete") => {
@@ -42,7 +38,7 @@ export default function Detail({
         });
     };
 
-    const checkPassword = async (password: string, kind = "update" || "delete") => {
+    const checkPassword = useCallback(async (password: string, kind = "update" || "delete") => {
         const res = await fetch(`http://localhost:3000/api/board/${id}/check`, {
             method: "POST",
             body: JSON.stringify({ password }),
@@ -57,7 +53,7 @@ export default function Detail({
         } else {
             alert("비밀번호가 틀렸습니다.");
         }
-    };
+    }, []);
 
     return (
         <Wrap>
