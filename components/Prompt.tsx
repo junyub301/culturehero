@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import Button from "./Button";
 import Input from "./Input";
@@ -19,6 +19,18 @@ export default function Prompt({ onClose, onSuccess, text, defaultValue }: Promp
         onClose();
     };
 
+    useEffect(() => {
+        function keyupFn(e: KeyboardEvent) {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        }
+        document.addEventListener("keyup", keyupFn);
+        return () => {
+            document.removeEventListener("keyup", keyupFn);
+        };
+    });
+
     return (
         <Overlay>
             <div className="prompt__wrap">
@@ -28,6 +40,7 @@ export default function Prompt({ onClose, onSuccess, text, defaultValue }: Promp
                 <div className="prompt__content">
                     <Input
                         label={text}
+                        autoFocus
                         type="password"
                         onChange={(e) => setValue(e.currentTarget.value)}
                         onKeyUp={(e) => {

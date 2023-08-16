@@ -8,7 +8,7 @@ import useFetch from "@/lib/useFetch";
 
 export default function Board({ params: { id } }: { params: { id: string } }) {
     const [isUpdate, setIsUpdate] = useState<boolean>(false);
-    const { data } = useFetch<Board[]>(`board/${id}`, ["detail-board", id]);
+    const { data } = useFetch<Board>(`board/${id}`, ["detail-board", id]);
     return (
         <section>
             {data &&

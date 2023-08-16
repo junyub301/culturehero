@@ -3,6 +3,7 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Textarea from "@/components/Textarea";
 import useMutations from "@/lib/useMutations";
+import { encrypt } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -31,7 +32,7 @@ export default function Board() {
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (validate()) {
-            const data = { userId, password, content, title } as CreateData;
+            const data = { userId, password: encrypt(password), content, title } as CreateData;
             mutate(data);
         }
     };
@@ -49,6 +50,7 @@ export default function Board() {
             <Form onSubmit={onSubmit}>
                 <div className="user__info">
                     <Input
+                        autoFocus
                         label="Id*"
                         onChange={(e) => setUserId(e.currentTarget.value)}
                         value={userId}
@@ -73,7 +75,9 @@ export default function Board() {
                     value={content}
                 />
                 <div className="create__footer">
-                    <Button onClick={() => router.push("/")}>취소</Button>
+                    <Button variants="cancel" onClick={() => router.push("/")}>
+                        취소
+                    </Button>
                     <Button type="submit">추가</Button>
                 </div>
             </Form>

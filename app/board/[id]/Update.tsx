@@ -32,10 +32,11 @@ export default function Update({ board, setIsUpdate }: UpdateProps) {
         }
         mutate({ ...board, title, content });
     };
+
     return (
         <Wrap onSubmit={onSubmit}>
             <div className="update__title">
-                <Input value={title} onChange={(e) => setTitle(e.currentTarget.value)} />
+                <Input autoFocus value={title} onChange={(e) => setTitle(e.currentTarget.value)} />
             </div>
             <div>
                 <span className="user__id">{board.userId}</span> •{" "}
@@ -45,7 +46,9 @@ export default function Update({ board, setIsUpdate }: UpdateProps) {
                 <Textarea value={content} onChange={(e) => setContent(e.currentTarget.value)} />
             </div>
             <div className="update__footer">
-                <Button onClick={() => setIsUpdate(false)}>취소</Button>
+                <Button variants="cancel" onClick={() => setIsUpdate(false)}>
+                    취소
+                </Button>
                 <Button type="submit">수정</Button>
             </div>
         </Wrap>

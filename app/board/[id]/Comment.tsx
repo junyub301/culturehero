@@ -6,12 +6,15 @@ import useFetch from "@/lib/useFetch";
 import useModal from "@/lib/useModal";
 import useMutations from "@/lib/useMutations";
 import { Comment, Comment as CommentType } from "@/types/board";
-import { dateFormat } from "@/utils";
+import { dateFormat, decrypt, encrypt } from "@/utils";
 import { useCallback, useState } from "react";
 import { styled } from "styled-components";
 
 const Comments = ({ id }: { id: string }) => {
-    const INVALIDATE_QUERY_KDY = ["board-comment", id];
+    const test1 = encrypt("1111");
+    const test2 = encrypt("1111");
+    console.log(decrypt(test1), decrypt(test2));
+    const INVALIDATE_QUERY_KDY = ["board-comments", id];
     const [commentValue, setCommentValue] = useState<string>("");
     const [userId, setUserId] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -35,7 +38,7 @@ const Comments = ({ id }: { id: string }) => {
         createComment({
             comment: commentValue,
             userId,
-            password,
+            password: encrypt(password),
         });
     };
 
@@ -82,7 +85,7 @@ const Comments = ({ id }: { id: string }) => {
 };
 
 const Comment = ({ id, comment }: { id: string; comment: Comment }) => {
-    const INVALIDATE_QUERY_KDY = ["board-comment", id];
+    const INVALIDATE_QUERY_KDY = ["board-comments", id];
     const [isUpdate, setIsUpdate] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<string>(comment.comment);
     const { mutate: removeComment } = useMutations({
@@ -118,7 +121,7 @@ const Comment = ({ id, comment }: { id: string; comment: Comment }) => {
             `http://localhost:3000/api/board/${id}/comment/${comment.id}/check`,
             {
                 method: "POST",
-                body: JSON.stringify({ password }),
+                body: JSON.stringify({ password: encrypt(password) }),
             }
         );
         const data = await res.json();
@@ -165,6 +168,12 @@ const Comment = ({ id, comment }: { id: string; comment: Comment }) => {
                     <div className="comment__update">
                         <Input
                             value={inputValue}
+                            onKeyUp={(e) => {
+                                if (e.key === "Enter") {
+                                    onUpdate();
+                                }
+                            }}
+                            autoFocus
                             onChange={(e) => setInputValue(e.currentTarget.value)}
                         />
                         <Button onClick={onUpdate}>수정</Button>

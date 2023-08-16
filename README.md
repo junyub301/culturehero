@@ -9,6 +9,6 @@
 -   [x] PUT comment
 -   [x] DELETE comment
 -   [ ] style
--   [ ] password JWT
+-   [x] password crypto
 -   [ ] TEST
 -   [ ] Refactor

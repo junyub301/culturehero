@@ -4,7 +4,7 @@ import Prompt from "@/components/Prompt";
 import useModal from "@/lib/useModal";
 import useMutations from "@/lib/useMutations";
 import { Board } from "@/types/board";
-import { dateFormat } from "@/utils";
+import { dateFormat, encrypt } from "@/utils";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { styled } from "styled-components";
@@ -41,7 +41,7 @@ export default function Detail({
     const checkPassword = useCallback(async (password: string, kind = "update" || "delete") => {
         const res = await fetch(`http://localhost:3000/api/board/${id}/check`, {
             method: "POST",
-            body: JSON.stringify({ password }),
+            body: JSON.stringify({ password: encrypt(password) }),
         });
         const data = await res.json();
         if (data.ok) {

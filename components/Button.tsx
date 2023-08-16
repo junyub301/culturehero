@@ -1,37 +1,37 @@
-import { styled } from "styled-components";
+import { css, styled } from "styled-components";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variants?: "success" | "cancel";
+}
 
 const VARIANTS = {
     success: `
         --button-color: #ffffff;
         --button-bg-color: #613df3 ;
-        --button-hover-bg-color:#613df3;
     `,
     cancel: `
         --button-color: #ffffff;
-        --button-bg-color: #dc3545;
-        --button-hover-bg-color:#d92b3d;
-    `,
-    error: `
-        --button-color: #000000;
-        --button-bg-color:#d9d6d6;
-        --button-hover-bg-color:#cfcccc;
+        --button-bg-color: #ec6371;
     `,
 };
 
-export default function Button({ type, children, ...props }: ButtonProps) {
+export default function Button({ variants = "success", type, children, ...props }: ButtonProps) {
+    const colorVariants = VARIANTS[variants];
     return (
-        <CustomButton type={type || "button"} {...props}>
+        <CustomButton variants={colorVariants} type={type || "button"} {...props}>
             {children}
         </CustomButton>
     );
 }
 
-const CustomButton = styled.button`
+const CustomButton = styled.button<{ variants?: string }>`
+    ${(p) =>
+        css`
+            ${p.variants}
+        `};
     width: 100%;
-    background-color: #613df3;
+    background-color: var(--button-bg-color);
+    color: var(--button-color);
     padding: 1rem;
-    color: white;
     border-radius: 5px;
 `;
