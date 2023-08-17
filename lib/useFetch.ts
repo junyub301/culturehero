@@ -1,17 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import useApiError from "./useApiError";
 
 const BASE_URL = "https://64d5df4f613ee4426d97b2e2.mockapi.io/api/v1/";
 
-export default function useFetch<T>(url: string, queryKey: any) {
-    const query = async () => {
-        try {
-            const res = await fetch(`${BASE_URL}${url}`);
-            const data = await res.json();
-            return data;
-        } catch (error) {
-            console.log("🚀 ~ file: useFetch.ts:26 ~ query ~ error:", error);
-        }
-    };
+export default function useFetch<T>(url: string, queryKey: any): UseQueryResult<T, Error> {
+    const { handler } = useApiError();
+    const query = useCallback(async () => {
+        const res = await fetch(`${BASE_URL}${url}`);
 
-    return useQuery<T, Error, T>({ queryFn: query, queryKey });
+        if (!res.ok) {
+            handler(res.status, res.statusText);
+        }
+
+        const data = await res.json();
+        return data;
+    }, [url, queryKey]);
+
+    return useQuery<T, Error, T>({
+        queryFn: query,
+        queryKey,
+    });
 }

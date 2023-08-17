@@ -1,7 +1,6 @@
-import Image from "next/image";
-import { dehydrate } from "@tanstack/react-query";
 import getQueryClient from "@/utils/getQueryClient";
 import Hydrate from "@/utils/hydrate.client";
+import { dehydrate } from "@tanstack/react-query";
 import Boards from "./Boards";
 
 async function getBoards() {

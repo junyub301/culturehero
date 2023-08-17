@@ -6,9 +6,11 @@ import useMutations from "@/lib/useMutations";
 import { Board } from "@/types/board";
 import { dateFormat, encrypt } from "@/utils";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { styled } from "styled-components";
 import Comment from "./Comment";
+import Link from "next/link";
+import useApiError from "@/lib/useApiError";
 
 interface DetailProps {
     board: Board;
@@ -20,12 +22,12 @@ export default function Detail({
     setIsUpdate,
 }: DetailProps) {
     const router = useRouter();
+    const { handler } = useApiError();
     const { mutate } = useMutations({
         url: `board/${id}`,
         method: "DELETE",
         onSuccessFn: () => router.push("/"),
     });
-
     const { openModal } = useModal();
 
     const onCheck = (kind = "update" || "delete") => {
@@ -43,6 +45,9 @@ export default function Detail({
             method: "POST",
             body: JSON.stringify({ password: encrypt(password) }),
         });
+        if (!res.ok) {
+            handler(res.status, res.statusText);
+        }
         const data = await res.json();
         if (data.ok) {
             if (kind === "update") {
@@ -71,6 +76,9 @@ export default function Detail({
                 </div>
             </div>
             <pre className="board__content">{content}</pre>
+            <div className="board__back">
+                <Link href="/">목록</Link>
+            </div>
             <Comment id={id} />
         </Wrap>
     );
@@ -93,5 +101,9 @@ const Wrap = styled.section`
     .board__content {
         white-space: pre-wrap;
         margin: 2rem 0px;
+    }
+    .board__back {
+        margin: 1rem 0;
+        text-align: right;
     }
 `;

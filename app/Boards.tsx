@@ -1,4 +1,5 @@
 "use client";
+import { CustomError } from "@/lib/expection";
 import useIntersection from "@/lib/useIntersection";
 import { Board } from "@/types/board";
 import { ellipsisStr } from "@/utils";
@@ -9,13 +10,15 @@ import { useEffect, useRef } from "react";
 import { styled } from "styled-components";
 
 async function getBoards(page: number) {
-    try {
-        const data = await fetch(
-            `https://64d5df4f613ee4426d97b2e2.mockapi.io/api/v1//board?page=${page}&limit=15&sortby=createdAt&order=desc`
-        );
-        const boards = await data.json();
-        return boards;
-    } catch (error) {}
+    const res = await fetch(
+        `https://64d5df4f613ee4426d97b2e2.mockapi.io/api/v1//board?page=${page}&limit=15&sortby=createdAt&order=desc`
+    );
+
+    if (!res.ok) {
+        throw new CustomError(res.statusText);
+    }
+    const boards = await res.json();
+    return boards;
 }
 
 export default function Boards() {
@@ -44,7 +47,6 @@ export default function Boards() {
 
     return (
         <div>
-            <Plus href={"/board"}> +</Plus>
             <Wrap>
                 {data && data?.pages[0].length > 0 ? (
                     <>
@@ -74,6 +76,7 @@ export default function Boards() {
                     <div>데이터가 없습니다.</div>
                 )}
             </Wrap>
+            <Plus href={"/board"}> +</Plus>
         </div>
     );
 }
@@ -107,6 +110,9 @@ const Plus = styled(Link)`
     &:hover {
         transform: scale(1.15);
         transition: transform 0.5s;
+    }
+    &:visited {
+        color: white;
     }
 `;
 

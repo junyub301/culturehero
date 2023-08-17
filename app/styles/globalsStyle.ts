@@ -27,6 +27,9 @@ export const GlobalStyle = createGlobalStyle`
   a{
     cursor: pointer;
     text-decoration: none;
+    &:active,&:visited{
+      color:unset;
+    }
   }
 
   ul, ol {

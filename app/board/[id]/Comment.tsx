@@ -11,9 +11,6 @@ import { useCallback, useState } from "react";
 import { styled } from "styled-components";
 
 const Comments = ({ id }: { id: string }) => {
-    const test1 = encrypt("1111");
-    const test2 = encrypt("1111");
-    console.log(decrypt(test1), decrypt(test2));
     const INVALIDATE_QUERY_KDY = ["board-comments", id];
     const [commentValue, setCommentValue] = useState<string>("");
     const [userId, setUserId] = useState<string>("");

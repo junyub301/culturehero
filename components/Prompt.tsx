@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { styled } from "styled-components";
 import Button from "./Button";
 import Input from "./Input";
+import useApiError from "@/lib/useApiError";
+import { useNavigationEvent } from "@/lib/useNavigation";
 
 interface PromptProps {
     onClose: () => void;
@@ -12,6 +14,8 @@ interface PromptProps {
 
 export default function Prompt({ onClose, onSuccess, text, defaultValue }: PromptProps) {
     const [value, setValue] = useState<string>(defaultValue || "");
+    useNavigationEvent(onClose);
+
     const onClick = async () => {
         if (typeof onSuccess === "function") {
             await onSuccess(value);

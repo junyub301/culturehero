@@ -1,4 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { UseMutationResult, useMutation, useQueryClient } from "@tanstack/react-query";
+import useApiError from "./useApiError";
 
 const BASE_URL = "https://64d5df4f613ee4426d97b2e2.mockapi.io/api/v1/";
 
@@ -15,32 +17,36 @@ export default function useMutations<T = any>({
     onSuccessFn,
     invalidateQueryKey,
     ...restOptions
-}: useMutationsProps) {
+}: useMutationsProps): UseMutationResult<T, Error> {
     const queryClient = useQueryClient();
-
-    async function mutation(data?: any) {
-        const newData =
-            method === "POST"
-                ? { ...data, createdAt: new Date(), updatedAt: null }
-                : method === "PUT"
-                ? { ...data, updatedAt: new Date() }
-                : null;
-        const fetchOption =
-            method === "DELETE"
-                ? { method }
-                : {
-                      headers: {
-                          "Content-Type": "application/json",
-                      },
-                      method,
-                      body: JSON.stringify(newData),
-                  };
-        try {
+    const { handler } = useApiError();
+    const mutation = useCallback(
+        async (body?: any) => {
+            const newData =
+                method === "POST"
+                    ? { ...body, createdAt: new Date(), updatedAt: null }
+                    : method === "PUT"
+                    ? { ...body, updatedAt: new Date() }
+                    : null;
+            const fetchOption =
+                method === "DELETE"
+                    ? { method }
+                    : {
+                          headers: {
+                              "Content-Type": "application/json",
+                          },
+                          method,
+                          body: JSON.stringify(newData),
+                      };
             const res = await fetch(`${BASE_URL}${url}`, fetchOption);
+            if (!res.ok) {
+                handler(res.status, res.statusText);
+            }
             const data = await res.json();
             return data;
-        } catch (error) {}
-    }
+        },
+        [url, method]
+    );
 
     return useMutation(mutation, {
         onSuccess: () => {
